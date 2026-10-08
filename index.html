@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Who Is Teaching the Next Engineer?</title>
+<meta name="description" content="Internal draft for Keysight colleagues. Not an official Keysight publication.">
+<meta property="og:title" content="Who Is Teaching the Next Engineer?">
+<meta property="og:description" content="Internal draft for Keysight colleagues. Answer the Keysight question to read.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E90029;--ink:#373A36;--ink2:#5b5e5a;--g1:#CBCBCB;--g2:#97999B;--tint:#f4f4f3;--bg:#fff;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:break-word}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+a{color:var(--red);text-underline-offset:2px}
+h1,h2,h3{line-height:1.2;letter-spacing:-.01em;color:#1f211e}
+h1{font-size:clamp(30px,8vw,42px);font-weight:800;margin:.2em 0 .3em}
+h2{font-size:clamp(23px,5.5vw,28px);font-weight:750;margin:.15em 0 .6em}
+h3{font-size:19px;font-weight:700;margin:2em 0 .5em}
+section{margin:56px 0}
+p{margin:0 0 1em}
+.kicker{color:var(--red);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0}
+.lead{font-size:19px;font-weight:500}
+.note{font-size:15px;color:var(--ink2);border-left:3px solid var(--g1);padding-left:12px}
+.src{font-size:13px;line-height:1.5;color:var(--ink2);margin:12px 0 0}
+.sub{font-size:14px;font-weight:600;margin:0 0 8px}
+ul.tight,ol{padding-left:1.2em;margin:0 0 1em}
+ul.tight li,ol li{margin:.35em 0}
+.prompts li{font-style:italic}
+button{font:inherit}
+[hidden]{display:none!important}
+
+/* masthead + hero */
+.mast{background:#000;padding:14px 0}
+.mast img{display:block;height:29px;width:auto}
+.hero{margin:32px 0 40px}
+.dek{font-size:19px;color:var(--ink2);margin-bottom:.8em}
+.byline{font-size:14px;font-weight:600;margin-bottom:.8em}
+.flag{font-size:13px;color:var(--ink2);background:var(--tint);border-radius:6px;padding:8px 12px;display:inline-block}
+h2.tldr{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-bottom:.5em}
+
+/* stat tiles */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 24px}
+.stat{border-top:3px solid var(--red);padding:10px 2px 0}
+.stat b{display:block;font-size:34px;font-weight:800;line-height:1.05;color:#1f211e;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:14px;line-height:1.4;margin-top:4px}
+.stat small{display:block;font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.4}
+.stats.three{grid-template-columns:1fr}
+@media (min-width:600px){.stats.three{grid-template-columns:repeat(3,1fr)}}
+.callout{background:var(--tint);border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:16px 18px;margin:24px 0}
+.callout .big{font-size:40px;font-weight:800;line-height:1;color:var(--red)}
+.callout p{margin:.5em 0 0}
+
+/* figures + bar charts */
+figure{margin:24px 0 28px}
+.ftitle{font-size:15px;font-weight:700;margin-bottom:12px}
+.bars{display:grid;gap:9px}
+.bars .row{display:grid;grid-template-columns:minmax(5.5rem,34%) 1fr;align-items:center;gap:2px 10px}
+.bars.stack .row{grid-template-columns:1fr}
+.lab{font-size:14px;line-height:1.3}
+.track{display:flex;align-items:center;gap:8px;min-width:0}
+.fill{flex:0 0 auto;height:14px;width:calc(var(--v) * (100% - 4.5rem));min-width:3px;background:var(--g2);border-radius:0 4px 4px 0}
+.tracker .fill{width:calc(var(--v) * 100%)}
+.k .fill{background:var(--red)}
+.val{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row:hover .fill,.ch:hover .fill{filter:brightness(.88)}
+.pair{display:grid;gap:24px}
+@media (min-width:600px){.pair{grid-template-columns:1fr 1fr}}
+
+/* live tracker */
+.tracker{display:grid;gap:0;border-top:1px solid var(--g1)}
+.ch{padding:14px 0;border-bottom:1px solid var(--g1)}
+.ch-top{display:flex;justify-content:space-between;gap:12px;font-size:15px;margin-bottom:6px}
+.ch-top span{font-weight:600;font-variant-numeric:tabular-nums}
+.ch.k .ch-top b{color:var(--red)}
+.meta{font-size:13px;color:var(--ink2);margin:8px 0 2px;line-height:1.5}
+.meta b{color:var(--ink);font-variant-numeric:tabular-nums}
+.live{font-size:13px;margin:2px 0;color:var(--ink)}
+.live::before{content:"Live";font-size:11px;font-weight:700;color:#fff;background:var(--ink);border-radius:3px;padding:1px 5px;margin-right:6px}
+.sb{font-size:13px;font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;line-height:1.35}
+.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);font-weight:600;border-bottom:2px solid var(--ink);padding:6px 8px 6px 0}
+.tbl td{border-bottom:1px solid var(--g1);padding:8px 8px 8px 0;vertical-align:top}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl tr.hl td{font-weight:600}
+.tbl tr.hl td:first-child{box-shadow:inset 3px 0 0 var(--red);padding-left:8px}
+.tbl.grid td:not(:first-child),.tbl.grid th:not(:first-child){text-align:center}
+.shot{display:block;width:100%;height:auto;border:1px solid var(--g1);border-radius:8px}
+
+/* moves + ask */
+ol.steps li,ol.moves li{margin:.6em 0}
+ol.moves{counter-reset:m;list-style:none;padding:0}
+ol.moves li{counter-increment:m;position:relative;padding:12px 0 12px 48px;border-top:1px solid var(--g1);margin:0}
+ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;left:0;top:10px;font-size:22px;font-weight:800;color:var(--red)}
+.ask{border:2px solid var(--red);border-radius:10px;padding:20px 18px 22px}
+.ask h2{color:var(--red);margin-top:0}
+.share{margin-top:8px;background:var(--red);color:#fff;border:0;border-radius:6px;padding:12px 18px;font-weight:700;cursor:pointer;min-height:44px}
+.share:focus-visible,.gate button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+/* footer + notice */
+.foot{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--g1);font-size:14px}
+.foot summary{font-weight:700;cursor:pointer;padding:8px 0;min-height:44px}
+.foot details p{font-size:13px;line-height:1.6;color:var(--ink2)}
+.notice{font-size:12px;line-height:1.55;color:var(--ink2);margin:24px auto 48px}
+.notice b{color:var(--ink)}
+
+/* gate */
+.gate{padding-top:12vh;padding-bottom:24px}
+.gate form{margin-top:24px}
+.gate label{display:block;font-weight:600;margin-bottom:8px}
+.gate .hint{font-size:13px;color:var(--ink2);margin:6px 0 12px}
+.gate .field{display:flex;gap:8px}
+.gate input{flex:1;min-width:0;font:inherit;font-size:17px;padding:10px 12px;border:1.5px solid var(--g2);border-radius:6px;color:var(--ink);background:#fff}
+.gate input:focus{outline:none;border-color:var(--ink)}
+.gate button{background:var(--red);color:#fff;border:0;border-radius:6px;padding:10px 18px;font-weight:700;cursor:pointer;min-height:44px}
+.gate button[disabled]{opacity:.6;cursor:progress}
+#msg{min-height:1.5em;font-size:14px;margin-top:10px;color:var(--red);font-weight:600}
+</style>
+</head>
+<body>
+<main id="gate" class="wrap gate">
+  <p class="kicker">Internal draft · For Keysight colleagues</p>
+  <h1>Who Is Teaching the Next Engineer?</h1>
+  <p>This page is encrypted. Answer the Keysight question to read it.</p>
+  <form id="unlock">
+    <label for="answer">What is the pseudo nickname for Keysight's 2-port, mid-performance PXI VNA?</label>
+    <p class="hint" id="hint">Not case-sensitive.</p>
+    <div class="field">
+      <input id="answer" name="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="hint msg" required>
+      <button type="submit" id="go">Unlock</button>
+    </div>
+    <p id="msg" role="status" aria-live="polite"></p>
+  </form>
+</main>
+
+<article id="post" hidden></article>
+
+<div class="wrap"><p class="notice" id="notice"><b>Notice.</b> This page is an independent internal proposal by two Keysight account managers, written for discussion with Keysight Marketing. It is not an official publication of Keysight Technologies, Inc. Its views and recommendations are the authors' own and do not represent Keysight's positions, plans or commitments. Competitor information comes only from publicly available sources as captured on Oct 1, 2026. It may be incomplete or out of date and makes no claim about any company's products, performance or business practices. Third-party statistics are attributed to their original sources. Keysight and the Keysight logo are trademarks of Keysight Technologies, Inc. Rohde &amp; Schwarz, NI, Tektronix, Rigol, Siglent, YouTube, LinkedIn, Instagram, Reddit, Gemini, ChatGPT, Claude, Copilot and Perplexity are trademarks of their respective owners, used here only for identification; no affiliation or endorsement is implied. Please do not redistribute outside Keysight without Marketing and Legal review.</p></div>
+
+<script id="payload" type="application/json">{}</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var b64 = function (s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); };
+  var KEY = 'kpost-answer';
+
+  // PBKDF2-SHA256 -> 64 bytes: AES-256-CBC key + HMAC-SHA256 key (encrypt-then-MAC).
+  async function decrypt(answer) {
+    var p = JSON.parse($('payload').textContent);
+    if (!p.ct) throw new Error('empty');
+    var s = crypto.subtle;
+    var base = await s.importKey('raw', new TextEncoder().encode(answer.trim().toLowerCase()), 'PBKDF2', false, ['deriveBits']);
+    var bits = new Uint8Array(await s.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64(p.salt), iterations: p.iter }, base, 512));
+    var iv = b64(p.iv), ct = b64(p.ct), msg = new Uint8Array(iv.length + ct.length);
+    msg.set(iv); msg.set(ct, iv.length);
+    var mk = await s.importKey('raw', bits.slice(32), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await s.verify('HMAC', mk, b64(p.tag), msg))) return null;
+    var ek = await s.importKey('raw', bits.slice(0, 32), 'AES-CBC', false, ['decrypt']);
+    return new TextDecoder().decode(await s.decrypt({ name: 'AES-CBC', iv: iv }, ek, ct));
+  }
+
+  async function unlock(answer, quiet) {
+    var html = null;
+    try { html = await decrypt(answer); } catch (e) {
+      if (e.message === 'empty') { $('msg').textContent = 'This build has no encrypted content yet.'; return; }
+    }
+    if (!html) { if (!quiet) $('msg').textContent = 'Not quite. Try again.'; return; }
+    try { sessionStorage.setItem(KEY, answer); } catch (e) {}
+    $('gate').hidden = true;
+    $('post').innerHTML = html;
+    $('post').hidden = false;
+    window.scrollTo(0, 0);
+    initPost();
+  }
+
+  $('unlock').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    $('go').disabled = true; $('msg').textContent = 'Checking…';
+    await unlock($('answer').value);
+    $('go').disabled = false;
+  });
+
+  try { var saved = sessionStorage.getItem(KEY); if (saved) unlock(saved, true); } catch (e) {}
+
+  function initPost() {
+    var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    var daysSince = function (iso) { var d = iso.slice(0, 10).split('-').map(Number); return Math.round((today - Date.UTC(d[0], d[1] - 1, d[2])) / 864e5); };
+    var fmt = function (n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 100) / 10 + 'K' : String(n); };
+
+    // "Days since last upload" keeps ticking from the Oct 1 capture.
+    document.querySelectorAll('[data-last]').forEach(function (el) {
+      var n = daysSince(el.dataset.last);
+      el.querySelector('.ago').textContent = n.toLocaleString('en-US');
+      if (String(n) !== el.dataset.oct1) el.querySelector('.oct1').textContent = '(' + el.dataset.oct1 + ' on Oct 1)';
+    });
+
+    // Phase 2: data.json from the daily cron, if present; otherwise the Oct 1 numbers stand alone.
+    fetch('data.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.channels) return;
+      document.querySelectorAll('[data-ch]').forEach(function (el) {
+        var c = d.channels[el.dataset.ch]; if (!c) return;
+        var parts = [];
+        if (c.subscribers != null) parts.push(fmt(c.subscribers) + ' subscribers');
+        if (c.latestUpload) parts.push('last upload ' + c.latestUpload.slice(0, 10) + ' (' + daysSince(c.latestUpload) + ' days ago)');
+        var live = el.querySelector('.live');
+        live.textContent = (d.updated ? d.updated.slice(0, 10) + ': ' : '') + parts.join(' · ');
+        live.hidden = false;
+      });
+    }).catch(function () {});
+
+    var btn = $('share');
+    if (btn) btn.addEventListener('click', function () {
+      var data = { title: document.title, text: 'Worth 5 minutes. You will need the answer to the Keysight question.', url: location.href.split('#')[0] };
+      if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+      navigator.clipboard.writeText(data.url).then(function () { btn.textContent = 'Link copied'; });
+    });
+  }
+})();
+</script>
+</body>
+</html>
