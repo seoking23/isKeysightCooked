@@ -25,6 +25,7 @@ jobs:
       - name: Encrypt post into the page
         env:
           PAGE_PASSWORD: ${{ secrets.PAGE_PASSWORD }}
+          PAGE_CODE: ${{ secrets.PAGE_CODE }}
           POST_HTML_GZ: ${{ secrets.POST_HTML_GZ }}
           GEMINI_PNG: ${{ secrets.GEMINI_PNG }}
         run: python3 .github/encrypt.py _site

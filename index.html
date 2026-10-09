@@ -130,22 +130,34 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
 .gate input:focus{outline:none;border-color:var(--ink)}
 .gate button{background:var(--red);color:#fff;border:0;border-radius:6px;padding:10px 18px;font-weight:700;cursor:pointer;min-height:44px}
 .gate button[disabled]{opacity:.6;cursor:progress}
-#msg{min-height:1.5em;font-size:14px;margin-top:10px;color:var(--red);font-weight:600}
+.gate .step{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin:0 0 6px}
+.msg{min-height:1.5em;font-size:14px;margin-top:10px;color:var(--red);font-weight:600}
 </style>
 </head>
 <body>
 <main id="gate" class="wrap gate">
   <p class="kicker">Internal draft · For Keysight colleagues</p>
   <h1>Who Is Teaching the Next Engineer?</h1>
-  <p>This page is encrypted. Answer the Keysight question to read it.</p>
+  <p>This page is encrypted. Pass two quick checks to read it.</p>
   <form id="unlock">
+    <p class="step">Check 1 of 2</p>
     <label for="answer">What is the pseudo nickname for Keysight's 2-port, mid-performance PXI VNA?</label>
     <p class="hint" id="hint">Not case-sensitive.</p>
     <div class="field">
       <input id="answer" name="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="hint msg" required>
-      <button type="submit" id="go">Unlock</button>
+      <button type="submit" id="go">Next</button>
     </div>
-    <p id="msg" role="status" aria-live="polite"></p>
+    <p id="msg" class="msg" role="status" aria-live="polite"></p>
+  </form>
+  <form id="unlock2" hidden>
+    <p class="step">Check 2 of 2</p>
+    <label for="code">Enter the access code</label>
+    <p class="hint" id="hint2">Case-sensitive. Ask Douglas Seo or Nidhi Sundkam for the code.</p>
+    <div class="field">
+      <input id="code" name="code" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="hint2 msg2" required>
+      <button type="submit" id="go2">Unlock</button>
+    </div>
+    <p id="msg2" class="msg" role="status" aria-live="polite"></p>
   </form>
 </main>
 
@@ -158,14 +170,15 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var b64 = function (s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); };
-  var KEY = 'kpost-answer';
+  var KEY1 = 'kpost-answer', KEY2 = 'kpost-code', inner = null;
+  var store = function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} };
+  var load = function (k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
 
-  // PBKDF2-SHA256 -> 64 bytes: AES-256-CBC key + HMAC-SHA256 key (encrypt-then-MAC).
-  async function decrypt(answer) {
-    var p = JSON.parse($('payload').textContent);
-    if (!p.ct) throw new Error('empty');
+  // Two layers: the answer opens the outer layer (which holds the inner payload), the code opens the post.
+  // Each layer: PBKDF2-SHA256 -> 64 bytes: AES-256-CBC key + HMAC-SHA256 key (encrypt-then-MAC).
+  async function decrypt(secret, p) {
     var s = crypto.subtle;
-    var base = await s.importKey('raw', new TextEncoder().encode(answer.trim().toLowerCase()), 'PBKDF2', false, ['deriveBits']);
+    var base = await s.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveBits']);
     var bits = new Uint8Array(await s.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64(p.salt), iterations: p.iter }, base, 512));
     var iv = b64(p.iv), ct = b64(p.ct), msg = new Uint8Array(iv.length + ct.length);
     msg.set(iv); msg.set(ct, iv.length);
@@ -175,13 +188,24 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
     return new TextDecoder().decode(await s.decrypt({ name: 'AES-CBC', iv: iv }, ek, ct));
   }
 
-  async function unlock(answer, quiet) {
-    var html = null;
-    try { html = await decrypt(answer); } catch (e) {
-      if (e.message === 'empty') { $('msg').textContent = 'This build has no encrypted content yet.'; return; }
-    }
-    if (!html) { if (!quiet) $('msg').textContent = 'Not quite. Try again.'; return; }
-    try { sessionStorage.setItem(KEY, answer); } catch (e) {}
+  async function open(secret, p) { try { return await decrypt(secret, p); } catch (e) { return null; } }
+
+  async function check1(answer, quiet) {
+    var p = JSON.parse($('payload').textContent);
+    if (!p.ct) { $('msg').textContent = 'This build has no encrypted content yet.'; return false; }
+    var out = await open(answer.trim().toLowerCase(), p);
+    if (!out) { $('msg').textContent = quiet ? '' : 'Not quite. Try again.'; return false; }
+    inner = JSON.parse(out);
+    store(KEY1, answer);
+    $('unlock').hidden = true; $('unlock2').hidden = false;
+    if (!quiet) $('code').focus();
+    return true;
+  }
+
+  async function check2(code, quiet) {
+    var html = await open(code.trim(), inner);
+    if (!html) { $('msg2').textContent = quiet ? '' : 'That code didn’t work. Try again.'; return; }
+    store(KEY2, code);
     $('gate').hidden = true;
     $('post').innerHTML = html;
     $('post').hidden = false;
@@ -189,14 +213,22 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
     initPost();
   }
 
-  $('unlock').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    $('go').disabled = true; $('msg').textContent = 'Checking…';
-    await unlock($('answer').value);
-    $('go').disabled = false;
-  });
+  function onSubmit(form, btn, msg, run) {
+    $(form).addEventListener('submit', async function (e) {
+      e.preventDefault();
+      $(btn).disabled = true; $(msg).textContent = 'Checking…';
+      await run();
+      $(btn).disabled = false;
+    });
+  }
+  onSubmit('unlock', 'go', 'msg', function () { return check1($('answer').value); });
+  onSubmit('unlock2', 'go2', 'msg2', function () { return check2($('code').value); });
 
-  try { var saved = sessionStorage.getItem(KEY); if (saved) unlock(saved, true); } catch (e) {}
+  // Same tab, after a reload: skip the checks already passed.
+  (async function () {
+    var a = load(KEY1), c = load(KEY2);
+    if (a && (await check1(a, true)) && c) check2(c, true);
+  })();
 
   function initPost() {
     var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
