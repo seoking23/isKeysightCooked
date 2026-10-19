@@ -63,6 +63,9 @@ h2.tldr{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(-
 .callout{background:var(--tint);border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:16px 18px;margin:24px 0}
 .callout .big{font-size:40px;font-weight:800;line-height:1;color:var(--red)}
 .callout p{margin:.5em 0 0}
+.callout.move{padding:20px 20px 18px}
+.callout.move h3{font-size:22px;margin:.25em 0 .1em}
+.callout.move ul{margin:.6em 0 0}
 
 /* figures + bar charts */
 figure{margin:24px 0 28px}
@@ -91,6 +94,15 @@ figure{margin:24px 0 28px}
 .live{font-size:13px;margin:2px 0;color:var(--ink)}
 .live::before{content:"Live";font-size:11px;font-weight:700;color:#fff;background:var(--ink);border-radius:3px;padding:1px 5px;margin-right:6px}
 .sb{font-size:13px;font-weight:600}
+@media (prefers-reduced-motion:no-preference){.tracker .fill{transition:width .3s ease}}
+
+/* time-window switch */
+.seg{display:grid;grid-template-columns:repeat(4,1fr);border:1.5px solid var(--g1);border-radius:8px;overflow:hidden;margin:0 0 14px}
+.seg button{background:#fff;color:var(--ink);border:0;border-left:1.5px solid var(--g1);padding:8px 4px;min-height:44px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:3px solid var(--red);outline-offset:-3px}
+
 
 /* tables */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -102,6 +114,21 @@ figure{margin:24px 0 28px}
 .tbl tr.hl td:first-child{box-shadow:inset 3px 0 0 var(--red);padding-left:8px}
 .tbl.grid td:not(:first-child),.tbl.grid th:not(:first-child){text-align:center}
 .shot{display:block;width:100%;height:auto;border:1px solid var(--g1);border-radius:8px}
+
+/* collapsed sections */
+.fold summary{display:block;list-style:none;cursor:pointer;position:relative;padding:14px 52px 14px 0;border-top:1px solid var(--g1);border-bottom:1px solid var(--g1)}
+.fold summary::-webkit-details-marker{display:none}
+.fold:has(+ .fold){margin-bottom:0}
+.fold + .fold{margin-top:-1px}
+.fold summary .kicker{display:block}
+.fold summary h2{margin:.15em 0 0}
+.fold summary::after{content:"";position:absolute;right:14px;top:50%;width:9px;height:9px;margin-top:-8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg)}
+.fold summary::before{content:"";position:absolute;right:0;top:50%;width:38px;height:38px;margin-top:-19px;border:1.5px solid var(--g1);border-radius:50%}
+.fold summary:hover::before{border-color:var(--ink)}
+.fold summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.fold details[open]{padding-bottom:28px}
+.fold details[open] summary{border-bottom-color:transparent;margin-bottom:8px}
+.fold details[open] summary::after{transform:rotate(225deg);margin-top:-3px}
 
 /* moves + ask */
 ol.steps li,ol.moves li{margin:.6em 0}
@@ -163,7 +190,7 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
 
 <article id="post" hidden></article>
 
-<div class="wrap"><p class="notice" id="notice"><b>Notice.</b> This page is an independent internal proposal by two Keysight account managers, written for discussion with Keysight Marketing. It is not an official publication of Keysight Technologies, Inc. Its views and recommendations are the authors' own and do not represent Keysight's positions, plans or commitments. Competitor information comes only from publicly available sources as captured on Oct 1, 2026. It may be incomplete or out of date and makes no claim about any company's products, performance or business practices. Third-party statistics are attributed to their original sources. Keysight and the Keysight logo are trademarks of Keysight Technologies, Inc. Rohde &amp; Schwarz, NI, Tektronix, Rigol, Siglent, YouTube, LinkedIn, Instagram, Reddit, Gemini, ChatGPT, Claude, Copilot and Perplexity are trademarks of their respective owners, used here only for identification; no affiliation or endorsement is implied. Please do not redistribute outside Keysight without Marketing and Legal review.</p></div>
+<div class="wrap"><p class="notice" id="notice"><b>Notice.</b> This page is an independent internal proposal by two Keysight account managers, written for discussion with Keysight Marketing. It is not an official publication of Keysight Technologies, Inc. Its views and recommendations are the authors' own and do not represent Keysight's positions, plans or commitments. Competitor information comes only from publicly available sources as captured in October 2026. It may be incomplete or out of date and makes no claim about any company's products, performance or business practices. Third-party statistics are attributed to their original sources. Keysight and the Keysight logo are trademarks of Keysight Technologies, Inc. Rohde &amp; Schwarz, NI, Tektronix, Rigol, Siglent, Harvard, Stanford, MIT, YouTube, LinkedIn, Instagram, Reddit, Gemini, ChatGPT, Claude, Copilot and Perplexity are trademarks of their respective owners, used here only for identification; no affiliation or endorsement is implied. Please do not redistribute outside Keysight without Marketing and Legal review.</p></div>
 
 <script id="payload" type="application/json">{}</script>
 <script>
@@ -233,7 +260,7 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
   function initPost() {
     var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
     var daysSince = function (iso) { var d = iso.slice(0, 10).split('-').map(Number); return Math.round((today - Date.UTC(d[0], d[1] - 1, d[2])) / 864e5); };
-    var fmt = function (n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 100) / 10 + 'K' : String(n); };
+    var fmt = function (n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e5 ? Math.round(n / 1e3) + 'K' : n >= 1e3 ? Math.round(n / 100) / 10 + 'K' : String(n); };
 
     // "Days since last upload" keeps ticking from the Oct 1 capture.
     document.querySelectorAll('[data-last]').forEach(function (el) {
@@ -241,6 +268,25 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
       el.querySelector('.ago').textContent = n.toLocaleString('en-US');
       if (String(n) !== el.dataset.oct1) el.querySelector('.oct1').textContent = '(' + el.dataset.oct1 + ' on Oct 1)';
     });
+
+    // Window switch on the YouTube tracker: the post ships the 14-day view; data-v12/24/35 hold the longer windows.
+    var chs = document.querySelectorAll('.tracker [data-v12]');
+    chs.forEach(function (el) { el._v14 = [el.querySelector('.ch-top span').textContent, el.querySelector('.fill').style.getPropertyValue('--v')]; });
+    function setWin(w) {
+      var max = 0;
+      chs.forEach(function (el) { max = Math.max(max, +el.dataset['v' + w] || 0); });
+      chs.forEach(function (el) {
+        var n = +el.dataset['v' + w];
+        el.querySelector('.ch-top span').textContent = w === '14' ? el._v14[0] : fmt(n) + ' views';
+        el.querySelector('.fill').style.setProperty('--v', w === '14' ? el._v14[1] : n / max);
+      });
+      document.querySelectorAll('[data-win]').forEach(function (el) { el.hidden = el.dataset.win !== w; });
+      document.querySelectorAll('[data-set-win]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.setWin === w)); });
+    }
+    document.querySelectorAll('[data-set-win]').forEach(function (b) { b.addEventListener('click', function () { setWin(b.dataset.setWin); }); });
+
+    // Collapsed sections open for printing, so a printed or PDF copy keeps their content.
+    window.addEventListener('beforeprint', function () { document.querySelectorAll('.fold details').forEach(function (d) { d.open = true; }); });
 
     // Phase 2: data.json from the daily cron, if present; otherwise the Oct 1 numbers stand alone.
     fetch('data.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
