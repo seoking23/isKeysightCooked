@@ -262,11 +262,12 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
     var daysSince = function (iso) { var d = iso.slice(0, 10).split('-').map(Number); return Math.round((today - Date.UTC(d[0], d[1] - 1, d[2])) / 864e5); };
     var fmt = function (n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e5 ? Math.round(n / 1e3) + 'K' : n >= 1e3 ? Math.round(n / 100) / 10 + 'K' : String(n); };
 
-    // "Days since last upload" keeps ticking from the Oct 1 capture.
+    // "Days since last upload" keeps ticking from the capture date (data-asof on the tracker, data-ago on each channel).
     document.querySelectorAll('[data-last]').forEach(function (el) {
       var n = daysSince(el.dataset.last);
       el.querySelector('.ago').textContent = n.toLocaleString('en-US');
-      if (String(n) !== el.dataset.oct1) el.querySelector('.oct1').textContent = '(' + el.dataset.oct1 + ' on Oct 1)';
+      var asof = el.closest('[data-asof]');
+      if (asof && String(n) !== el.dataset.ago) el.querySelector('.asof').textContent = '(' + el.dataset.ago + ' on ' + asof.dataset.asof + ')';
     });
 
     // Window switch on the YouTube tracker: the post ships the 14-day view; data-v12/24/35 hold the longer windows.
@@ -288,7 +289,7 @@ ol.moves li::before{content:counter(m,decimal-leading-zero);position:absolute;le
     // Collapsed sections open for printing, so a printed or PDF copy keeps their content.
     window.addEventListener('beforeprint', function () { document.querySelectorAll('.fold details').forEach(function (d) { d.open = true; }); });
 
-    // Phase 2: data.json from the daily cron, if present; otherwise the Oct 1 numbers stand alone.
+    // Phase 2: data.json from the daily cron, if present; otherwise the captured numbers stand alone.
     fetch('data.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.channels) return;
       document.querySelectorAll('[data-ch]').forEach(function (el) {
